@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Student Management</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --warning: #d97706;
+      --warning-hover: #b45309;
+      --danger: #991b1b;
+      --danger-hover: #7f1d1d;
+      --bg: #f1f5f9;
+      --card-bg: #ffffff;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --text-muted: #64748b;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, -apple-system, sans-serif; background-color: var(--bg); color: var(--text); padding-bottom: 3rem; }
+
+    .top-bar { background: #1e40af; color: #fff; text-align: center; padding: 0.85rem; font-weight: 600; font-size: 1.1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .nav-shortcuts { display: flex; justify-content: center; gap: 1.5rem; margin-top: 0.35rem; font-size: 0.85rem; }
+    .nav-shortcuts a { color: #bfdbfe; text-decoration: none; font-weight: 500; }
+    .nav-shortcuts a:hover { color: #fff; text-decoration: underline; }
+
+    .contenedor { max-width: 1000px; margin: 2rem auto; padding: 0 1rem; }
+    h1 { font-size: 1.75rem; margin-bottom: 1.25rem; color: #0f172a; }
+
+    #mensaje { padding: 0.75rem 1rem; border-radius: 8px; margin-bottom: 1.5rem; font-weight: 500; display: none; }
+    #mensaje.exito { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; display: block; }
+    #mensaje.error { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; display: block; }
+
+    .seccion-formulario { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    .grid-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1rem; }
+    label { display: flex; flex-direction: column; font-size: 0.85rem; font-weight: 500; color: #334155; gap: 0.35rem; }
+    input { padding: 0.6rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem; transition: border-color 0.2s, background-color 0.2s; }
+    input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15); }
+    
+    input[readonly] { background-color: #f8fafc; color: #334155; border-color: #e2e8f0; cursor: default; }
+    input[readonly]:focus { outline: none; border-color: #e2e8f0; box-shadow: none; }
+
+    .acciones-form { margin-top: 1rem; display: flex; justify-content: flex-start; }
+    button { padding: 0.55rem 1.1rem; border: none; border-radius: 6px; font-weight: 500; font-size: 0.9rem; cursor: pointer; transition: background 0.2s; }
+    .btn-guardar { background: var(--primary); color: #fff; }
+    .btn-guardar:hover { background: var(--primary-hover); }
+    .btn-cancelar { background: #e2e8f0; color: #334155; }
+    .btn-cancelar:hover { background: #cbd5e1; }
+
+    .barra-busqueda-wrapper { margin-bottom: 0.75rem; }
+    .barra-busqueda { width: 100%; padding: 0.75rem 1rem; font-size: 0.95rem; border: 1px solid #cbd5e1; border-radius: 8px; background: #fff; }
+    .barra-busqueda:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15); }
+    .contador-estudiantes { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem; }
+
+    .grid-tarjetas { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
+    .tarjeta {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.25rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .tarjeta:hover { transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0,0,0,0.08); border-color: #93c5fd; }
+    .tarjeta-nombre { font-size: 1.15rem; font-weight: 600; color: #0f172a; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem; }
+    .tarjeta-nombre::before { content: "👤"; font-size: 1.1rem; }
+
+    .tarjeta-acciones { display: flex; gap: 0.5rem; }
+    .btn-editar { background: var(--warning); color: #fff; flex: 1; text-align: center; }
+    .btn-editar:hover { background: var(--warning-hover); }
+    .btn-borrar { background: var(--danger); color: #fff; flex: 1; text-align: center; }
+    .btn-borrar:hover { background: var(--danger-hover); }
+
+    .sin-resultados { text-align: center; color: var(--text-muted); padding: 3rem 1rem; font-size: 1rem; grid-column: 1 / -1; }
+
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 23, 42, 0.55);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+      padding: 1rem;
+    }
+    .modal-overlay.activo { opacity: 1; pointer-events: auto; }
+    .modal-contenido {
+      background: #fff;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 540px;
+      box-shadow: 0 20px 25px -5px rgba(0,0,0,0.25);
+      overflow: hidden;
+      transform: translateY(15px);
+      transition: transform 0.2s ease;
+    }
+    .modal-overlay.activo .modal-contenido { transform: translateY(0); }
+    .modal-header {
+      padding: 1.1rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #f8fafc;
+    }
+    .modal-header h3 { font-size: 1.15rem; color: #0f172a; }
+    .btn-cerrar-x { background: none; border: none; font-size: 1.4rem; color: var(--text-muted); cursor: pointer; line-height: 1; }
+    .btn-cerrar-x:hover { color: #0f172a; }
+    .modal-body { padding: 1.25rem; }
+    .modal-footer { padding: 0.9rem 1.25rem; background: #f8fafc; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 0.5rem; }
+  </style>
+</head>
+<body>
+
+  <div class="top-bar">
+    <div>Student Management System</div>
+    <div class="nav-shortcuts">
+      <a href="/pagina2.html">Go to Page 2 (Explorer) →</a>
+      <a href="/pagina3.html">Go to Page 3 (Responsive Showcase) →</a>
+    </div>
+  </div>
+
+  <div class="contenedor">
+    <h1>Students</h1>
+    <div id="mensaje"></div>
+
+    <div class="seccion-formulario">
+      <form id="formNuevo">
+        <div class="grid-form">
+          <label>National ID <input id="numCedula" required placeholder="e.g. 1721518015"></label>
+          <label>Full Name <input id="nomEstudiante" required placeholder="e.g. John Doe"></label>
+          <label>Email <input id="email" type="email" placeholder="example@uce.edu.ec"></label>
+          <label>Phone <input id="telefono" placeholder="0995321664"></label>
+          <label>Address <input id="direccion" placeholder="Quito, Ecuador"></label>
+          <label>Date of Birth <input id="fechNacimiento" type="date"></label>
+        </div>
+        <div class="acciones-form">
+          <button class="btn-guardar" type="submit">Save Student</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="barra-busqueda-wrapper">
+      <input type="text" id="buscador" class="barra-busqueda" placeholder="Search in real time by name, ID, email or address...">
+    </div>
+    <div id="contadorEstudiantes" class="contador-estudiantes"></div>
+
+    <div id="contenedorTarjetas" class="grid-tarjetas"></div>
+  </div>
+
+  <div id="modalEstudiante" class="modal-overlay">
+    <div class="modal-contenido">
+      <div class="modal-header">
+        <h3 id="modalTitulo">Student</h3>
+        <button type="button" class="btn-cerrar-x" id="btnCerrarX">&times;</button>
+      </div>
+      <form id="formModal">
+        <div class="modal-body">
+          <input type="hidden" id="modalNumMatricula">
+          <div class="grid-form">
+            <label>National ID <input id="modalNumCedula" readonly></label>
+            <label>Full Name <input id="modalNomEstudiante" readonly></label>
+            <label>Email <input id="modalEmail" type="email" readonly></label>
+            <label>Phone <input id="modalTelefono" readonly></label>
+            <label>Address <input id="modalDireccion" readonly></label>
+            <label>Date of Birth <input id="modalFechNacimiento" type="date" readonly></label>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn-guardar" id="btnGuardarCambios" style="display:none;">Save changes</button>
+          <button type="button" class="btn-cancelar" id="btnCancelarModal">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+<script>
+(function() {
+  const API = "/api/estudiantes";
+  let estudiantesCache = [];
+
+  const $ = (id) => document.getElementById(id);
+
+  function mostrarMensaje(texto, esError = false) {
+    const el = $("mensaje");
+    el.textContent = texto;
+    el.className = esError ? "error" : "exito";
+    setTimeout(() => { el.style.display = "none"; el.className = ""; }, 4000);
+  }
+
+  async function cargarEstudiantes() {
+    try {
+      const res = await fetch(API);
+      if (!res.ok) throw new Error("Server error");
+      estudiantesCache = await res.json();
+      filtrarYRenderizar();
+    } catch (e) {
+      mostrarMensaje("Could not connect to backend. Is Spring Boot running?", true);
+    }
+  }
+
+  function filtrarYRenderizar() {
+    const busqueda = $("buscador").value.toLowerCase().trim();
+    const filtrados = estudiantesCache.filter((est) => {
+      const nombre = (est.nomEstudiante || "").toLowerCase();
+      const cedula = (est.numCedula || "").toLowerCase();
+      const email = (est.email || "").toLowerCase();
+      const direccion = (est.direccion || "").toLowerCase();
+      return nombre.includes(busqueda) || cedula.includes(busqueda) || email.includes(busqueda) || direccion.includes(busqueda);
+    });
+
+    $("contadorEstudiantes").textContent = `Showing ${filtrados.length} of ${estudiantesCache.length} students`;
+    renderizarTarjetas(filtrados);
+  }
+
+  function renderizarTarjetas(lista) {
+    const contenedor = $("contenedorTarjetas");
+    contenedor.innerHTML = "";
+
+    if (lista.length === 0) {
+      contenedor.innerHTML = '<div class="sin-resultados">No matching students found.</div>';
+      return;
+    }
+
+    lista.forEach((est) => {
+      const tarjeta = document.createElement("div");
+      tarjeta.className = "tarjeta";
+
+      tarjeta.onclick = () => abrirModal(est, false);
+
+      tarjeta.innerHTML = `
+        <div class="tarjeta-nombre">${est.nomEstudiante || "Unnamed Student"}</div>
+        <div class="tarjeta-acciones">
+          <button type="button" class="btn-editar">Edit</button>
+          <button type="button" class="btn-borrar">Delete</button>
+        </div>
+      `;
+
+      const btnEditar = tarjeta.querySelector(".btn-editar");
+      btnEditar.onclick = (e) => {
+        e.stopPropagation();
+        abrirModal(est, true);
+      };
+
+      const btnBorrar = tarjeta.querySelector(".btn-borrar");
+      btnBorrar.onclick = (e) => {
+        e.stopPropagation();
+        eliminarEstudiante(est.numMatricula, est.nomEstudiante);
+      };
+
+      contenedor.appendChild(tarjeta);
+    });
+  }
+
+  const CAMPOS_MODAL = ["modalNumCedula", "modalNomEstudiante", "modalEmail", "modalTelefono", "modalDireccion", "modalFechNacimiento"];
+
+  function abrirModal(est, enEdicion = false) {
+    $("modalTitulo").textContent = enEdicion ? `Edit Student #${est.numMatricula}` : `Student #${est.numMatricula}`;
+    $("modalNumMatricula").value = est.numMatricula;
+    $("modalNumCedula").value = est.numCedula || "";
+    $("modalNomEstudiante").value = est.nomEstudiante || "";
+    $("modalEmail").value = est.email || "";
+    $("modalTelefono").value = est.telefono || "";
+    $("modalDireccion").value = est.direccion || "";
+    $("modalFechNacimiento").value = est.fechNacimiento || "";
+
+    CAMPOS_MODAL.forEach(id => {
+      $(id).readOnly = !enEdicion;
+    });
+
+    if (enEdicion) {
+      $("btnGuardarCambios").style.display = "inline-block";
+      $("modalNomEstudiante").focus();
+    } else {
+      $("btnGuardarCambios").style.display = "none";
+    }
+
+    $("modalEstudiante").classList.add("activo");
+  }
+
+  function cerrarModal() {
+    $("modalEstudiante").classList.remove("activo");
+  }
+
+  $("formNuevo").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const nuevo = {
+      numCedula: $("numCedula").value || null,
+      nomEstudiante: $("nomEstudiante").value || null,
+      email: $("email").value || null,
+      telefono: $("telefono").value || null,
+      direccion: $("direccion").value || null,
+      fechNacimiento: $("fechNacimiento").value || null,
+    };
+
+    try {
+      const res = await fetch(API, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(nuevo),
+      });
+      if (!res.ok) throw new Error("HTTP Status " + res.status);
+      mostrarMensaje("Student registered successfully");
+      $("formNuevo").reset();
+      cargarEstudiantes();
+    } catch (err) {
+      mostrarMensaje("Registration failed: " + err.message, true);
+    }
+  });
+
+  $("formModal").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const id = $("modalNumMatricula").value;
+    const actualizado = {
+      numCedula: $("modalNumCedula").value || null,
+      nomEstudiante: $("modalNomEstudiante").value || null,
+      email: $("modalEmail").value || null,
+      telefono: $("modalTelefono").value || null,
+      direccion: $("modalDireccion").value || null,
+      fechNacimiento: $("modalFechNacimiento").value || null,
+    };
+
+    try {
+      const res = await fetch(`${API}/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(actualizado),
+      });
+      if (!res.ok) throw new Error("HTTP Status " + res.status);
+      mostrarMensaje("Student information updated successfully");
+      cerrarModal();
+      cargarEstudiantes();
+    } catch (err) {
+      mostrarMensaje("Update failed: " + err.message, true);
+    }
+  });
+
+  async function eliminarEstudiante(id, nombre) {
+    if (!confirm(`Are you sure you want to delete ${nombre || 'this student'}?`)) return;
+    try {
+      const res = await fetch(`${API}/${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error("HTTP Status " + res.status);
+      mostrarMensaje("Student deleted successfully");
+      cargarEstudiantes();
+    } catch (err) {
+      mostrarMensaje("Could not delete student: " + err.message, true);
+    }
+  }
+
+  $("btnCerrarX").addEventListener("click", cerrarModal);
+  $("btnCancelarModal").addEventListener("click", cerrarModal);
+  $("modalEstudiante").addEventListener("click", (e) => {
+    if (e.target === $("modalEstudiante")) cerrarModal();
+  });
+
+  $("buscador").addEventListener("input", filtrarYRenderizar);
+  cargarEstudiantes();
+})();
+</script>
+</body>
+</html>

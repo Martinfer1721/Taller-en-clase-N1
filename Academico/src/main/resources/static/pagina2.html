@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Page 2 - Student Explorer</title>
+  <style>
+    :root {
+      --primary: #10b981;
+      --primary-hover: #059669;
+      --dark: #0f172a;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --border: #e2e8f0;
+      --text: #1e293b;
+      --text-muted: #64748b;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, -apple-system, sans-serif; background-color: var(--bg); color: var(--text); padding-bottom: 3rem; }
+
+    .nav-bar { background: var(--dark); color: #fff; padding: 0.85rem 1.5rem; display: flex; justify-content: space-between; align-items: center; }
+    .nav-bar a { color: #38bdf8; text-decoration: none; font-size: 0.9rem; font-weight: 500; }
+    .nav-bar a:hover { text-decoration: underline; }
+
+    .contenedor { max-width: 1050px; margin: 2rem auto; padding: 0 1rem; }
+    h1 { font-size: 1.8rem; margin-bottom: 0.5rem; color: var(--dark); }
+    .subtitulo { color: var(--text-muted); margin-bottom: 1.5rem; font-size: 0.95rem; }
+
+    .delay-box {
+      background: #eff6ff;
+      border: 1px dashed #3b82f6;
+      color: #1e40af;
+      padding: 0.9rem;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 500;
+    }
+    
+    .barra-busqueda-wrapper {
+      display: none;
+      margin-bottom: 1.5rem;
+      position: relative;
+      animation: aparecer 0.4s ease-out;
+    }
+    @keyframes aparecer { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+
+    .barra-busqueda {
+      width: 100%;
+      padding: 0.85rem 1rem 0.85rem 2.8rem;
+      font-size: 1rem;
+      border: 2px solid #cbd5e1;
+      border-radius: 10px;
+      background: #fff;
+      transition: border-color 0.2s;
+    }
+    .barra-busqueda:focus { outline: none; border-color: var(--primary); }
+    .icono-lupa { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); font-size: 1.1rem; color: var(--text-muted); pointer-events: none; }
+
+    .grid-estudiantes { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 1.25rem; }
+    .card-estudiante {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      cursor: pointer;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+      transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+      display: flex;
+      flex-direction: column;
+    }
+    .card-estudiante:hover { transform: translateY(-4px); box-shadow: 0 8px 16px rgba(0,0,0,0.1); border-color: #a7f3d0; }
+    .card-estudiante img { width: 100%; height: 210px; object-fit: cover; background: #e2e8f0; }
+    .card-cuerpo { padding: 1rem; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+    .card-nombre { font-size: 1.1rem; font-weight: 600; color: var(--dark); margin-bottom: 0.4rem; }
+    .card-matricula { font-size: 0.85rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.4rem; }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; background: #22c55e; }
+
+    #vistaDetalle {
+      display: none;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 2rem;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+      animation: aparecer 0.3s ease;
+    }
+    .detalle-layout { display: flex; flex-wrap: wrap; gap: 2rem; margin-bottom: 2rem; }
+    .detalle-img { width: 240px; height: 240px; border-radius: 12px; object-fit: cover; border: 2px solid var(--border); background: #e2e8f0; }
+    .detalle-info { flex: 1; min-width: 280px; }
+    .detalle-info h2 { font-size: 1.8rem; color: var(--dark); margin-bottom: 1rem; }
+    .detalle-fila { margin-bottom: 0.65rem; font-size: 0.95rem; }
+    .detalle-fila strong { color: var(--text-muted); display: inline-block; width: 140px; }
+
+    .seccion-adicional { border-top: 1px solid var(--border); padding-top: 1.5rem; margin-top: 1rem; }
+    .seccion-adicional h3 { font-size: 1.1rem; margin-bottom: 0.75rem; color: var(--dark); }
+    .datos-adicionales { font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; }
+
+    .footer-detalle { display: flex; justify-content: flex-end; margin-top: 2rem; }
+    .btn-back { background: var(--dark); color: #fff; padding: 0.7rem 1.8rem; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 1rem; }
+    .btn-back:hover { background: #334155; }
+
+    .cargando { text-align: center; padding: 3rem; color: var(--text-muted); font-size: 1.1rem; grid-column: 1 / -1; }
+  </style>
+</head>
+<body>
+
+  <div class="nav-bar">
+    <span>Student Explorer (Page 2)</span>
+    <div style="display:flex; gap:1.25rem;">
+      <a href="/crud.html">← Go to Student CRUD (Page 1)</a>
+      <a href="/pagina3.html">Go to Responsive Showcase (Page 3) →</a>
+    </div>
+  </div>
+
+  <div class="contenedor">
+    
+    <div id="vistaPrincipal">
+      <h1>Registered Students</h1>
+      <p class="subtitulo">Asynchronous Vanilla JS client consuming Spring Boot REST API</p>
+
+      <div id="delayBox" class="delay-box">
+        <span>⏳</span> <span id="textoDelay">The search bar will appear in 4.5 seconds...</span>
+      </div>
+
+      <div id="barraBusquedaWrapper" class="barra-busqueda-wrapper">
+        <span class="icono-lupa">🔍</span>
+        <input type="text" id="buscador" class="barra-busqueda" placeholder="Search student by name, ID or email...">
+      </div>
+
+      <div id="gridEstudiantes" class="grid-estudiantes"></div>
+    </div>
+
+    <div id="vistaDetalle">
+      <div class="detalle-layout">
+        <img id="detImg" class="detalle-img" src="" alt="Student Avatar">
+        <div class="detalle-info">
+          <h2 id="detNombre"></h2>
+          <div class="detalle-fila"><strong>Enrollment ID:</strong> <span id="detMatricula"></span></div>
+          <div class="detalle-fila"><strong>National ID:</strong> <span id="detCedula"></span></div>
+          <div class="detalle-fila"><strong>Email:</strong> <span id="detEmail"></span></div>
+          <div class="detalle-fila"><strong>Phone:</strong> <span id="detTelefono"></span></div>
+          <div class="detalle-fila"><strong>Address:</strong> <span id="detDireccion"></span></div>
+          <div class="detalle-fila"><strong>Birth Date:</strong> <span id="detNacimiento"></span></div>
+        </div>
+      </div>
+
+      <div class="seccion-adicional">
+        <h3>Institutional Record</h3>
+        <div id="detAdicional" class="datos-adicionales"></div>
+      </div>
+
+      <div class="footer-detalle">
+        <button type="button" class="btn-back" id="btnBack">Back</button>
+      </div>
+    </div>
+
+  </div>
+
+<script>
+(function() {
+  const API_ESTUDIANTES = "/api/estudiantes";
+  const API_DETALLE = "/api/estudiantes/";
+
+  let estudiantesCache = [];
+
+  const $ = (id) => document.getElementById(id);
+
+  const PERSONAJES_MASCULINOS = [1, 2, 5, 8, 18, 28, 47, 50, 58, 62, 70, 75, 82, 118, 137, 144, 161, 171, 196, 242];
+  const PERSONAJES_FEMENINOS   = [3, 4, 9, 39, 40, 57, 66, 120, 169, 184, 202, 216, 249, 303, 314, 321, 331, 340, 360, 369];
+
+  function detectarEsMujer(nombreCompleto) {
+    if (!nombreCompleto) return false;
+    const primerNombre = nombreCompleto.trim().split(" ")[0].toLowerCase();
+
+    const nombresFemeninos = [
+      "maria", "maría", "ana", "carmen", "isabel", "mercedes", "pilar", "andrea",
+      "laura", "paula", "daniela", "sofia", "sofía", "lucia", "lucía", "camila",
+      "valeria", "gabriela", "diana", "natalia", "monica", "mónica", "patricia",
+      "elena", "adriana", "carolina", "claudia", "jessica", "vanessa", "fernanda",
+      "stephanie", "karen", "alejandra", "belen", "belén", "paola", "lorena", "carla"
+    ];
+
+    if (nombresFemeninos.includes(primerNombre)) return true;
+    if (primerNombre.endsWith("a") && primerNombre !== "joshua" && primerNombre !== "luca" && primerNombre !== "borja") {
+      return true;
+    }
+    return false;
+  }
+
+  function obtenerAvatarEstudiante(est) {
+    const matriculaNum = parseInt(est.numMatricula) || 1;
+    const esFemenino = detectarEsMujer(est.nomEstudiante);
+
+    if (esFemenino) {
+      const idPersonaje = PERSONAJES_FEMENINOS[matriculaNum % PERSONAJES_FEMENINOS.length];
+      return `https://rickandmortyapi.com/api/character/avatar/${idPersonaje}.jpeg`;
+    } else {
+      const idPersonaje = PERSONAJES_MASCULINOS[matriculaNum % PERSONAJES_MASCULINOS.length];
+      return `https://rickandmortyapi.com/api/character/avatar/${idPersonaje}.jpeg`;
+    }
+  }
+
+  let decimasRestantes = 45;
+  const textoDelay = $("textoDelay");
+  const delayBox = $("delayBox");
+  const barraBusquedaWrapper = $("barraBusquedaWrapper");
+  const buscador = $("buscador");
+
+  const intervalo = setInterval(() => {
+    decimasRestantes -= 5;
+    if (decimasRestantes > 0) {
+      if (textoDelay) textoDelay.textContent = `The search bar will appear in ${(decimasRestantes / 10).toFixed(1)} seconds...`;
+    } else {
+      clearInterval(intervalo);
+      if (delayBox) delayBox.style.display = "none";
+      if (barraBusquedaWrapper) barraBusquedaWrapper.style.display = "block";
+      if (buscador) buscador.focus();
+    }
+  }, 500);
+
+  async function cargarEstudiantes() {
+    const contenedor = $("gridEstudiantes");
+    if (!contenedor) return;
+    contenedor.innerHTML = '<div class="cargando">Loading students from database...</div>';
+
+    try {
+      const res = await fetch(API_ESTUDIANTES);
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      estudiantesCache = await res.json();
+      renderizarTarjetas(estudiantesCache);
+    } catch (e) {
+      console.error("Error loading students:", e);
+      contenedor.innerHTML = `<div class="cargando" style="color:#dc2626;">Could not load students (${e.message}). Is Spring Boot running?</div>`;
+    }
+  }
+
+  function renderizarTarjetas(lista) {
+    const contenedor = $("gridEstudiantes");
+    if (!contenedor) return;
+    contenedor.innerHTML = "";
+
+    if (!lista || lista.length === 0) {
+      contenedor.innerHTML = '<div class="cargando">No registered students found.</div>';
+      return;
+    }
+
+    lista.forEach((est) => {
+      const card = document.createElement("div");
+      card.className = "card-estudiante";
+
+      const avatarUrl = obtenerAvatarEstudiante(est);
+
+      card.innerHTML = `
+        <img src="${avatarUrl}" alt="${est.nomEstudiante || ''}" loading="lazy">
+        <div class="card-cuerpo">
+          <div class="card-nombre">${est.nomEstudiante || "Unnamed Student"}</div>
+          <div class="card-matricula">
+            <span class="status-dot"></span>
+            <span>Enrollment #${est.numMatricula} · ID: ${est.numCedula || 'N/A'}</span>
+          </div>
+        </div>
+      `;
+
+      card.onclick = () => verDetalleEstudiante(est.numMatricula);
+      contenedor.appendChild(card);
+    });
+  }
+
+  if (buscador) {
+    buscador.addEventListener("input", (e) => {
+      const termino = e.target.value.toLowerCase().trim();
+      const filtrados = estudiantesCache.filter((est) => {
+        const nombre = (est.nomEstudiante || "").toLowerCase();
+        const cedula = (est.numCedula || "").toLowerCase();
+        const email = (est.email || "").toLowerCase();
+        const direccion = (est.direccion || "").toLowerCase();
+        return nombre.includes(termino) || cedula.includes(termino) || email.includes(termino) || direccion.includes(termino);
+      });
+      renderizarTarjetas(filtrados);
+    });
+  }
+
+  async function verDetalleEstudiante(id) {
+    try {
+      const res = await fetch(`${API_DETALLE}${id}`);
+      if (!res.ok) throw new Error("HTTP error " + res.status);
+      const est = await res.json();
+
+      $("detImg").src = obtenerAvatarEstudiante(est);
+      $("detNombre").textContent = est.nomEstudiante || "Unnamed Student";
+      $("detMatricula").textContent = `#${est.numMatricula}`;
+      $("detCedula").textContent = est.numCedula || "Not registered";
+      $("detEmail").textContent = est.email || "Not registered";
+      $("detTelefono").textContent = est.telefono || "Not registered";
+      $("detDireccion").textContent = est.direccion || "Not registered";
+      $("detNacimiento").textContent = est.fechNacimiento || "Not registered";
+
+      $("detAdicional").textContent = `Active student in the Academic System (Central University of Ecuador). Verified record under institutional enrollment #${est.numMatricula}.`;
+
+      $("vistaPrincipal").style.display = "none";
+      $("vistaDetalle").style.display = "block";
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } catch (e) {
+      alert("Error loading student details: " + e.message);
+    }
+  }
+
+  const btnBack = $("btnBack");
+  if (btnBack) {
+    btnBack.addEventListener("click", () => {
+      $("vistaDetalle").style.display = "none";
+      $("vistaPrincipal").style.display = "block";
+    });
+  }
+
+  cargarEstudiantes();
+})();
+</script>
+</body>
+</html>

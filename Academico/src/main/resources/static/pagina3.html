@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Page 3 - Responsive Design Showcase</title>
+  <style>
+    :root {
+      --primary: #6366f1;
+      --primary-hover: #4f46e5;
+      --dark: #0f172a;
+      --bg: #0f172a;
+      --stage-bg: #1e293b;
+      --card-bg: #ffffff;
+      --border: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, -apple-system, sans-serif; background-color: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; }
+
+    .nav-bar { background: #090d16; padding: 0.85rem 1.5rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
+    .nav-bar .brand { font-weight: 700; font-size: 1.05rem; color: #a5b4fc; display: flex; align-items: center; gap: 0.5rem; }
+    .nav-links { display: flex; gap: 1.25rem; font-size: 0.85rem; }
+    .nav-links a { color: #38bdf8; text-decoration: none; font-weight: 500; transition: color 0.2s; }
+    .nav-links a:hover { color: #7dd3fc; text-decoration: underline; }
+
+    .toolbar-responsive {
+      background: #1e293b;
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 1.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .device-buttons { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .btn-device {
+      background: #334155;
+      color: #f8fafc;
+      border: 1px solid #475569;
+      padding: 0.55rem 1rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s;
+    }
+    .btn-device:hover { background: #475569; }
+    .btn-device.active { background: var(--primary); border-color: #818cf8; color: #fff; box-shadow: 0 0 12px rgba(99, 102, 241, 0.4); }
+
+    .metrics-badge {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      background: #090d16;
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+    }
+    .metrics-badge strong { color: #38bdf8; }
+
+    .viewport-stage {
+      flex: 1;
+      padding: 2rem 1rem;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      overflow-x: auto;
+      background: radial-gradient(circle at top, #1e293b 0%, #0f172a 100%);
+    }
+
+    .device-frame {
+      width: 100%;
+      max-width: 100%;
+      background: #f8fafc;
+      color: #0f172a;
+      border-radius: 12px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      transition: max-width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      overflow: hidden;
+      border: 2px solid #334155;
+      min-height: 600px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .device-frame.desktop { max-width: 1200px; }
+    .device-frame.laptop  { max-width: 1024px; }
+    .device-frame.tablet  { max-width: 768px; border-width: 8px; border-radius: 20px; }
+    .device-frame.mobile  { max-width: 380px; border-width: 10px; border-radius: 26px; }
+    .device-frame.fluid   { max-width: 100%; }
+
+    .browser-header {
+      background: #e2e8f0;
+      padding: 0.6rem 1rem;
+      border-bottom: 1px solid #cbd5e1;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .window-dots { display: flex; gap: 0.35rem; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot.red { background: #ef4444; }
+    .dot.yellow { background: #f59e0b; }
+    .dot.green { background: #10b981; }
+    .url-bar {
+      flex: 1;
+      background: #fff;
+      border-radius: 6px;
+      padding: 0.25rem 0.75rem;
+      font-size: 0.75rem;
+      color: #64748b;
+      border: 1px solid #cbd5e1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .app-content { padding: 1.5rem; flex: 1; }
+    .app-header { margin-bottom: 1.25rem; }
+    .app-title { font-size: 1.5rem; font-weight: 700; color: #0f172a; margin-bottom: 0.25rem; }
+    .app-subtitle { font-size: 0.85rem; color: #64748b; }
+
+    .search-box {
+      width: 100%;
+      padding: 0.7rem 1rem;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
+    }
+    .search-box:focus { outline: none; border-color: #6366f1; }
+
+    .responsive-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+
+    .char-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      transition: transform 0.2s, box-shadow 0.2s;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+    }
+    .char-card:hover { transform: translateY(-3px); box-shadow: 0 6px 12px rgba(0,0,0,0.08); border-color: #cbd5e1; }
+    .char-card img { width: 100%; height: 180px; object-fit: cover; background: #e2e8f0; }
+    .char-info { padding: 0.85rem; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+    .char-name { font-size: 0.95rem; font-weight: 600; color: #0f172a; margin-bottom: 0.25rem; }
+    .char-badge { font-size: 0.75rem; color: #64748b; display: flex; align-items: center; gap: 0.35rem; }
+    .badge-dot { width: 6px; height: 6px; border-radius: 50%; background: #10b981; }
+
+    .detail-view {
+      display: none;
+      background: #fff;
+      border-radius: 12px;
+      border: 1px solid #e2e8f0;
+      padding: 1.5rem;
+      animation: aparecer 0.25s ease;
+    }
+    @keyframes aparecer { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+    .detail-flex { display: flex; flex-wrap: wrap; gap: 1.5rem; }
+    .detail-photo { width: 180px; height: 180px; border-radius: 10px; object-fit: cover; border: 1px solid #e2e8f0; }
+    .detail-text { flex: 1; min-width: 220px; }
+    .detail-text h3 { font-size: 1.4rem; color: #0f172a; margin-bottom: 0.75rem; }
+    .detail-row { font-size: 0.85rem; margin-bottom: 0.4rem; }
+    .detail-row strong { color: #64748b; width: 110px; display: inline-block; }
+
+    .btn-back-internal {
+      margin-top: 1.25rem;
+      background: #0f172a;
+      color: #fff;
+      border: none;
+      padding: 0.55rem 1.4rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+      float: right;
+    }
+    .btn-back-internal:hover { background: #334155; }
+
+    .info-footer {
+      background: #090d16;
+      border-top: 1px solid var(--border);
+      padding: 1.25rem 1.5rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.25rem;
+      font-size: 0.8rem;
+    }
+    .info-col h4 { color: #a5b4fc; margin-bottom: 0.5rem; font-size: 0.85rem; }
+    .info-col p { color: var(--text-muted); line-height: 1.5; margin-bottom: 0.4rem; }
+    .code-pill { background: #1e293b; color: #38bdf8; padding: 0.15rem 0.4rem; border-radius: 4px; font-family: monospace; }
+  </style>
+</head>
+<body>
+
+  <div class="nav-bar">
+    <div class="brand">
+      <span>📐</span> Responsive Viewport Showcase (Page 3)
+    </div>
+    <div class="nav-links">
+      <a href="/crud.html">← Page 1 (CRUD)</a>
+      <a href="/pagina2.html">← Page 2 (Explorer)</a>
+    </div>
+  </div>
+
+  <div class="toolbar-responsive">
+    <div class="device-buttons">
+      <button type="button" class="btn-device" onclick="setDevice('desktop')">🖥️ Desktop (1200px)</button>
+      <button type="button" class="btn-device" onclick="setDevice('laptop')">💻 Laptop (1024px)</button>
+      <button type="button" class="btn-device" onclick="setDevice('tablet')">📟 Tablet (768px)</button>
+      <button type="button" class="btn-device" onclick="setDevice('mobile')">📱 Mobile (380px)</button>
+      <button type="button" class="btn-device active" onclick="setDevice('fluid')">🔄 Full Screen (Fluid)</button>
+    </div>
+    
+    <div class="metrics-badge">
+      <span>Device: <strong id="lblDevice">Fluid (100%)</strong></span>
+      <span>Width: <strong id="lblWidth">-- px</strong></span>
+      <span>Columns: <strong id="lblCols">--</strong></span>
+    </div>
+  </div>
+
+  <div class="viewport-stage">
+    
+    <div id="deviceFrame" class="device-frame fluid">
+      <div class="browser-header">
+        <div class="window-dots">
+          <span class="dot red"></span>
+          <span class="dot yellow"></span>
+          <span class="dot green"></span>
+        </div>
+        <div class="url-bar" id="mockUrl">http://localhost:8080/pagina2.html (Active Responsive Mode)</div>
+      </div>
+
+      <div class="app-content">
+        
+        <div id="appGridSection">
+          <div class="app-header">
+            <h2 class="app-title">Students & Characters</h2>
+            <p class="app-subtitle">Responsive layout with CSS Grid auto-fill and fluid Media Queries</p>
+          </div>
+
+          <input type="text" id="appSearch" class="search-box" placeholder="Filter in real time...">
+
+          <div id="gridContenedor" class="responsive-grid">
+            <div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #64748b;">Loading students...</div>
+          </div>
+        </div>
+
+        <div id="appDetailSection" class="detail-view">
+          <div class="detail-flex">
+            <img id="viewImg" class="detail-photo" src="" alt="Student Avatar">
+            <div class="detail-text">
+              <h3 id="viewName"></h3>
+              <div class="detail-row"><strong>Enrollment ID:</strong> <span id="viewMatricula"></span></div>
+              <div class="detail-row"><strong>National ID:</strong> <span id="viewCedula"></span></div>
+              <div class="detail-row"><strong>Email:</strong> <span id="viewEmail"></span></div>
+              <div class="detail-row"><strong>Phone:</strong> <span id="viewTelefono"></span></div>
+              <div class="detail-row"><strong>Address:</strong> <span id="viewDireccion"></span></div>
+            </div>
+          </div>
+          <button type="button" class="btn-back-internal" onclick="ocultarDetalle()">Back</button>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <div class="info-footer">
+    <div class="info-col">
+      <h4>🖥️ Desktop / Laptop (>= 1024px)</h4>
+      <p>Wide grid with <strong>4 to 6 columns</strong> using <span class="code-pill">repeat(auto-fill, minmax(200px, 1fr))</span>.</p>
+      <p>Maximizes horizontal real estate for expansive desktop viewports.</p>
+    </div>
+    <div class="info-col">
+      <h4>📟 Tablet (768px - 1023px)</h4>
+      <p>Balanced restructuring to <strong>2 or 3 columns</strong> with scaled card padding.</p>
+      <p>Optimized for touch targets without horizontal scrolling.</p>
+    </div>
+    <div class="info-col">
+      <h4>📱 Mobile (<= 480px)</h4>
+      <p>Automated collapse into a <strong>single full-width column</strong>.</p>
+      <p>Stacks media assets vertically using <span class="code-pill">flex-wrap: wrap</span> for smartphone usability.</p>
+    </div>
+  </div>
+
+<script>
+(function() {
+  const API_ESTUDIANTES = "/api/estudiantes";
+  let listaEstudiantes = [];
+
+  const PERSONAJES_MASCULINOS = [1, 2, 5, 8, 18, 28, 47, 50, 58, 62, 70, 75, 82, 118, 137, 144, 161, 171, 196, 242];
+  const PERSONAJES_FEMENINOS   = [3, 4, 9, 39, 40, 57, 66, 120, 169, 184, 202, 216, 249, 303, 314, 321, 331, 340, 360, 369];
+
+  function detectarEsMujer(nombre) {
+    if (!nombre) return false;
+    const p = nombre.trim().split(" ")[0].toLowerCase();
+    const fem = ["maria", "maría", "ana", "carmen", "isabel", "andrea", "laura", "paula", "daniela", "sofia", "sofía", "camila", "valeria", "gabriela", "diana", "carla"];
+    return fem.includes(p) || (p.endsWith("a") && p !== "joshua" && p !== "luca");
+  }
+
+  function obtenerAvatar(est) {
+    const num = parseInt(est.numMatricula) || 1;
+    const lista = detectarEsMujer(est.nomEstudiante) ? PERSONAJES_FEMENINOS : PERSONAJES_MASCULINOS;
+    return `https://rickandmortyapi.com/api/character/avatar/${lista[num % lista.length]}.jpeg`;
+  }
+
+  async function iniciar() {
+    try {
+      const res = await fetch(API_ESTUDIANTES);
+      if (!res.ok) throw new Error("HTTP error " + res.status);
+      listaEstudiantes = await res.json();
+      dibujarGrid(listaEstudiantes);
+    } catch (e) {
+      document.getElementById("gridContenedor").innerHTML = `<div style="grid-column:1/-1; color:#ef4444; text-align:center; padding:2rem;">Could not connect to ${API_ESTUDIANTES}. Is Spring Boot running?</div>`;
+    }
+  }
+
+  function dibujarGrid(datos) {
+    const contenedor = document.getElementById("gridContenedor");
+    contenedor.innerHTML = "";
+
+    if (!datos || datos.length === 0) {
+      contenedor.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:2rem; color:#64748b;">No students found to display.</div>';
+      actualizarMetricas();
+      return;
+    }
+
+    datos.forEach(est => {
+      const card = document.createElement("div");
+      card.className = "char-card";
+      card.onclick = () => verDetalle(est);
+
+      card.innerHTML = `
+        <img src="${obtenerAvatar(est)}" alt="${est.nomEstudiante || ''}" loading="lazy">
+        <div class="char-info">
+          <div class="char-name">${est.nomEstudiante || 'Unnamed Student'}</div>
+          <div class="char-badge">
+            <span class="badge-dot"></span>
+            <span>Enrollment #${est.numMatricula} · ID: ${est.numCedula || 'N/A'}</span>
+          </div>
+        </div>
+      `;
+      contenedor.appendChild(card);
+    });
+
+    actualizarMetricas();
+  }
+
+  function verDetalle(est) {
+    document.getElementById("viewImg").src = obtenerAvatar(est);
+    document.getElementById("viewName").textContent = est.nomEstudiante || 'Unnamed Student';
+    document.getElementById("viewMatricula").textContent = `#${est.numMatricula}`;
+    document.getElementById("viewCedula").textContent = est.numCedula || 'N/A';
+    document.getElementById("viewEmail").textContent = est.email || 'N/A';
+    document.getElementById("viewTelefono").textContent = est.telefono || 'N/A';
+    document.getElementById("viewDireccion").textContent = est.direccion || 'N/A';
+
+    document.getElementById("appGridSection").style.display = "none";
+    document.getElementById("appDetailSection").style.display = "block";
+  }
+
+  window.ocultarDetalle = function() {
+    document.getElementById("appDetailSection").style.display = "none";
+    document.getElementById("appGridSection").style.display = "block";
+  };
+
+  document.getElementById("appSearch").addEventListener("input", (e) => {
+    const q = e.target.value.toLowerCase().trim();
+    const filtrados = listaEstudiantes.filter(est => {
+      return (est.nomEstudiante || '').toLowerCase().includes(q) ||
+             (est.numCedula || '').toLowerCase().includes(q) ||
+             (est.email || '').toLowerCase().includes(q);
+    });
+    dibujarGrid(filtrados);
+  });
+
+  window.setDevice = function(deviceType) {
+    const frame = document.getElementById("deviceFrame");
+    frame.className = `device-frame ${deviceType}`;
+
+    document.querySelectorAll(".btn-device").forEach(btn => btn.classList.remove("active"));
+    const botonActivo = Array.from(document.querySelectorAll(".btn-device")).find(b => b.textContent.toLowerCase().includes(deviceType));
+    if (botonActivo) botonActivo.classList.add("active");
+
+    const nombres = {
+      desktop: "Desktop (1200px)",
+      laptop: "Laptop (1024px)",
+      tablet: "Tablet (768px)",
+      mobile: "Mobile (380px)",
+      fluid: "Full Width (Fluid)"
+    };
+    document.getElementById("lblDevice").textContent = nombres[deviceType] || deviceType;
+
+    setTimeout(actualizarMetricas, 360);
+  };
+
+  function actualizarMetricas() {
+    const frame = document.getElementById("deviceFrame");
+    const grid = document.getElementById("gridContenedor");
+    if (!frame || !grid) return;
+
+    const w = frame.clientWidth;
+    document.getElementById("lblWidth").textContent = `${w} px`;
+
+    let cols = "1 col";
+    if (w >= 1000) cols = "4 to 5 cols";
+    else if (w >= 700) cols = "3 cols";
+    else if (w >= 480) cols = "2 cols";
+    document.getElementById("lblCols").textContent = cols;
+  }
+
+  window.addEventListener("resize", actualizarMetricas);
+
+  iniciar();
+})();
+</script>
+</body>
+</html>

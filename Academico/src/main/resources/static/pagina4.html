@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Page 4 - AI UX/UI Auditor Agent</title>
+  <style>
+    :root {
+      --primary: #8b5cf6;
+      --primary-hover: #7c3aed;
+      --dark: #0f172a;
+      --bg: #0b0f19;
+      --card-bg: #1e293b;
+      --border: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, -apple-system, sans-serif; background-color: var(--bg); color: var(--text); padding-bottom: 3rem; min-height: 100vh; }
+
+    .nav-bar { background: #070a12; padding: 0.85rem 1.5rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
+    .brand { font-weight: 700; font-size: 1.05rem; color: #c4b5fd; display: flex; align-items: center; gap: 0.5rem; }
+    .nav-links { display: flex; gap: 1.25rem; font-size: 0.85rem; }
+    .nav-links a { color: #38bdf8; text-decoration: none; font-weight: 500; }
+    .nav-links a:hover { text-decoration: underline; }
+
+    .contenedor { max-width: 950px; margin: 2rem auto; padding: 0 1rem; }
+    h1 { font-size: 1.85rem; margin-bottom: 0.5rem; color: #fff; display: flex; align-items: center; gap: 0.5rem; }
+    .subtitulo { color: var(--text-muted); margin-bottom: 1.75rem; font-size: 0.95rem; }
+
+    /* Configuration Panel */
+    .panel-auditor {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+    }
+
+    .preset-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
+    .chip {
+      background: #0f172a;
+      color: #cbd5e1;
+      border: 1px solid #475569;
+      padding: 0.45rem 0.9rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .chip:hover { border-color: var(--primary); color: #fff; }
+    .chip.active { background: #6d28d9; border-color: #a78bfa; color: #fff; }
+
+    textarea {
+      width: 100%;
+      height: 110px;
+      background: #0f172a;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.85rem 1rem;
+      color: #fff;
+      font-size: 0.9rem;
+      resize: vertical;
+      font-family: inherit;
+    }
+    textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.25); }
+
+    .btn-analizar {
+      margin-top: 1rem;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 0.75rem 1.75rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: background 0.2s;
+    }
+    .btn-analizar:hover { background: var(--primary-hover); }
+    .btn-analizar:disabled { background: #475569; cursor: not-allowed; }
+
+    /* Results section */
+    .resultado-card {
+      display: none;
+      background: var(--card-bg);
+      border: 1px solid #4c1d95;
+      border-radius: 14px;
+      padding: 1.75rem;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+      animation: aparecer 0.3s ease;
+    }
+    @keyframes aparecer { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+    .res-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 1rem; margin-bottom: 1.25rem; }
+    .res-badge { background: #4c1d95; color: #e9d5ff; padding: 0.35rem 0.8rem; border-radius: 6px; font-weight: 600; font-size: 0.85rem; }
+
+    .analisis-body {
+      color: #e2e8f0;
+      line-height: 1.75;
+      font-size: 0.95rem;
+      white-space: pre-wrap;
+    }
+
+    .loader { display: none; text-align: center; padding: 2rem; color: var(--text-muted); font-size: 1rem; }
+    .spinner { display: inline-block; width: 24px; height: 24px; border: 3px solid #475569; border-top-color: var(--primary); border-radius: 50%; animation: girar 0.8s linear infinite; vertical-align: middle; margin-right: 0.5rem; }
+    @keyframes girar { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+  <div class="nav-bar">
+    <div class="brand">
+      <span>🤖</span> Gemini AI UI/UX Auditor (Page 4)
+    </div>
+    <div class="nav-links">
+      <a href="/crud.html">← Page 1 (CRUD)</a>
+      <a href="/pagina2.html">← Page 2 (Explorer)</a>
+      <a href="/pagina3.html">← Page 3 (Responsive)</a>
+    </div>
+  </div>
+
+  <div class="contenedor">
+    <h1><span>✨</span> AI Interface Auditor Agent</h1>
+    <p class="subtitulo">Asynchronous evaluation powered by Google Gemini 1.5 Flash through Spring Boot</p>
+
+    <div class="panel-auditor">
+      <div style="font-size:0.85rem; color:#cbd5e1; margin-bottom:0.6rem; font-weight:500;">Select target scope to audit:</div>
+      
+      <div class="preset-chips">
+        <button type="button" class="chip active" onclick="setPreset(1)">Audit Page 1: Student CRUD & Modal</button>
+        <button type="button" class="chip" onclick="setPreset(2)">Audit Page 2: Rick & Morty Explorer & 4.5s Delay</button>
+        <button type="button" class="chip" onclick="setPreset(3)">Audit Page 3: Responsive Viewport Switcher</button>
+        <button type="button" class="chip" onclick="setPreset(4)">Complete Architecture & UX Review</button>
+      </div>
+
+      <textarea id="promptInput" placeholder="Enter custom questions or requirements for the AI Agent..."></textarea>
+      
+      <div>
+        <button type="button" class="btn-analizar" id="btnEjecutar" onclick="ejecutarAnalisis()">
+          <span>⚡</span> Run AI Evaluation
+        </button>
+      </div>
+    </div>
+
+    <!-- Spinner -->
+    <div id="loader" class="loader">
+      <span class="spinner"></span> The AI Agent is analyzing your user interface and architectural patterns...
+    </div>
+
+    <!-- Evaluation Results -->
+    <div id="resultadoCard" class="resultado-card">
+      <div class="res-header">
+        <h3 style="color:#fff; font-size:1.2rem;">Auditor's Report & Feedback</h3>
+        <span class="res-badge">Model: Gemini 1.5 Flash</span>
+      </div>
+      <div id="analisisTexto" class="analisis-body"></div>
+    </div>
+  </div>
+
+<script>
+  const PRESETS = {
+    1: "Analyze the User Interface of Page 1: A student CRUD system built with a clean minimalist card grid showing only student names, action buttons (Edit, Delete), real-time search filtering, and a read-only modal pop-up for inspecting full records without page reload. What are its usability strengths and what can be improved?",
+    2: "Evaluate Page 2: A character explorer using Vanilla JS and the Rick and Morty API, integrating a 4.5-second countdown delay before showing the search bar, gender-based avatar mapping, and a detail view with a Back button. Give your UX feedback.",
+    3: "Critique Page 3: An interactive responsive design showcase featuring device simulation (Desktop 1200px, Laptop 1024px, Tablet 768px, Mobile 380px), live resolution pixel metrics, CSS Grid auto-fill, and media query documentation. How effective is this for testing?",
+    4: "Provide a comprehensive audit of the entire project: Decoupled client-server architecture with Spring Boot (Java 17), PostgreSQL, REST API endpoints, and a 4-page progressive front-end (CRUD, API consumption, Responsive showcase, and AI auditor). Give an overall grade from 1 to 10."
+  };
+
+  const promptInput = document.getElementById("promptInput");
+  promptInput.value = PRESETS[1];
+
+  function setPreset(num) {
+    document.querySelectorAll(".chip").forEach((c, idx) => {
+      c.classList.toggle("active", idx === (num - 1));
+    });
+    promptInput.value = PRESETS[num];
+  }
+
+  async function ejecutarAnalisis() {
+    const btn = document.getElementById("btnEjecutar");
+    const loader = document.getElementById("loader");
+    const resCard = document.getElementById("resultadoCard");
+    const resTexto = document.getElementById("analisisTexto");
+
+    const mensaje = promptInput.value.trim();
+    if (!mensaje) return;
+
+    btn.disabled = true;
+    loader.style.display = "block";
+    resCard.style.display = "none";
+
+    try {
+      const res = await fetch("/api/ia/analizar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mensaje: mensaje })
+      });
+
+      const data = await res.json();
+
+      if (data.error) {
+        throw new Error(data.error);
+      }
+
+      // Extrae la respuesta de texto generada por Gemini
+      const dictamen = data.candidates[0].content.parts[0].text;
+      resTexto.textContent = dictamen;
+      resCard.style.display = "block";
+
+    } catch (e) {
+      alert("Error al consultar el agente de IA: " + e.message);
+    } finally {
+      btn.disabled = false;
+      loader.style.display = "none";
+    }
+  }
+</script>
+</body>
+</html>
