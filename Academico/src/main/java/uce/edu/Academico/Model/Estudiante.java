@@ -2,11 +2,9 @@ package uce.edu.Academico.Model;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
-import java.util.List;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-@Table(name="estudiante")
+@Table(name = "estudiante")
 public class Estudiante {
 
     @Id
@@ -19,11 +17,6 @@ public class Estudiante {
     private String telefono;
     private String direccion;
     private LocalDate fechNacimiento;
-    
-    
-    @JsonIgnore
-    @OneToMany(mappedBy = "estudiante", cascade = CascadeType.ALL)
-    private List<AsistenciaNunez> asistencias;
 
     public Long getNumMatricula() {
         return numMatricula;
@@ -79,13 +72,5 @@ public class Estudiante {
 
     public void setFechNacimiento(LocalDate fechNacimiento) {
         this.fechNacimiento = fechNacimiento;
-    }
-
-    public List<AsistenciaNunez> getAsistencias() {
-        return asistencias;
-    }
-
-    public void setAsistencias(List<AsistenciaNunez> asistencias) {
-        this.asistencias = asistencias;
     }
 }
