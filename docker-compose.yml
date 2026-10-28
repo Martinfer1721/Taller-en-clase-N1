@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  postgres-db:
+    image: postgres:15-alpine
+    container_name: postgres-db
+    environment:
+      POSTGRES_DB: Academico
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Omega2025
+    ports:
+      - "5432:5432"
+    networks:
+      - red-academico
+
+  mi-app-academico:
+    build: ./Academico
+    container_name: mi-app-academico
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres-db
+    networks:
+      - red-academico
+
+networks:
+  red-academico:
+    driver: bridge
